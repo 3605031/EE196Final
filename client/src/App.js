@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, FormControl } from 'react-bootstrap';
 import logo from './logo.svg';
 import axios from 'axios';
 import './App.css';
@@ -9,9 +9,19 @@ import './App.css';
 class App extends Component {
   constructor() {
     super();
+    this.state = {
+      isAuthenticated: false,
+      sign_up: false,
+      sign_in:false,
+      name : null
+    };
     this.capture = this.capture.bind(this)
     this.faceCapture = this.faceCapture.bind(this);
+    this.signup = this.signup.bind(this);
+    this.signin = this.signin.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
+
   componentDidMount() {
     let canvas = document.getElementById('canvas'),
       context = canvas.getContext('2d'),
@@ -29,6 +39,8 @@ class App extends Component {
       //Error print
       console.log(error.code)
     })
+
+    console.log(this.state.sign_up)
 
 
   }
@@ -52,6 +64,33 @@ class App extends Component {
 
     var payload = { "image": image };
 
+
+    axios.post('/api', {
+      "image": image,
+      "name" : this.state.name,
+      "signup" : this.state.sign_up,
+      "signin" : this.state.sign_in
+
+    })
+      .then(function(response){
+        console.log(response)
+      })
+      .catch(function(error){
+        console.log(error)
+      })
+    
+
+
+  }
+
+  faceEnroll() {
+    let canvas = document.getElementById('canvas'),
+      context = canvas.getContext('2d'),
+      video = document.getElementById('video')
+    let image = canvas.toDataURL("image/jpeg")
+
+    var payload = { "image": image };
+
     axios.post('/api', {
       "image": image,
     })
@@ -63,19 +102,44 @@ class App extends Component {
       })
   }
 
+  signup(){
+    this.setState({ sign_up : true })
+    document.getElementById("title").innerHTML = "Enter your name and then press facecapture";
+  }
+
+  signin(){
+    this.setState({ sign_in : true })
+    document.getElementById("title").innerHTML = "Enter your name and then press facecapture";
+  }
+
+  handleChange(e) {
+    this.setState({ name : e.target.value });
+    console.log(this.state.name);
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src='logo.svg' className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <img src="https://cdn4.iconfinder.com/data/icons/basic-ui-elements/700/09_gear-128.png" className="App-logo" alt="logo" />
+          <h3 id="title">Welcome, please sign in</h3>
         </header>
         <p className="App-intro">
-          Welcome, please sign in
         </p>
         <div className="sign-in">
-          <Button id="sign-in" bsStyle="primary" onClick={this.capture} >Face Capture</Button>
+          <Button  bsStyle="primary" onClick={this.capture} >Face Capture</Button>
+          <Button id="sign-in" bsStyle="success" onClick={this.signin} >Sign In</Button>
+          <Button id="sign-up" bsStyle="danger" onClick={this.signup} >Sign Up</Button>
         </div>
+        { this.state.sign_up || this.state.sign_in ?
+        <div id="name-form" >
+          <FormControl
+              type="text"
+              value={this.state.name}
+              placeholder="Enter text"
+              onChange={this.handleChange}
+          />
+        </div> : <div></div>}
         <div className='options'>
 
           <div className="booth">

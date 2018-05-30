@@ -27,6 +27,12 @@
   padding-top: 30px;
 }
 
+#name-form{
+  width: 360px;
+  text-align: center;
+  margin: auto;
+}
+
 #screenshot {
   background-color: black
 }

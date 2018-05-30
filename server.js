@@ -54,9 +54,14 @@ app.post('/api', function (req, res) {
   };
 
   let image = req.body.image
+  let name = req.body.name
+  let sign_up = req.body.signup
+  let sign_in = req.body.signin
+
+  if(sign_in){
   axios.post('http://api.kairos.com/verify', {
     "image": image,
-    "subject_id": "Blake",
+    "subject_id": name,
     "gallery_name": "EE196"
   }, headers_config)
     .then(function (response) {
@@ -68,6 +73,24 @@ app.post('/api', function (req, res) {
       console.log(error)
       console.log("ERRORR!!")
     })
+  }
+
+  if(sign_up){
+    axios.post('http://api.kairos.com/enroll', {
+    "image": image,
+    "subject_id": name,
+    "gallery_name": "EE196"
+  }, headers_config)
+    .then(function (response) {
+      console.log(response)
+      console.log("SUCCESS!!")
+      console.log(response.data.images)
+    })
+    .catch(function (error) {
+      console.log(error)
+      console.log("ERRORR!!")
+    })
+  }
 
 
 });
